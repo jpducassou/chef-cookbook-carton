@@ -22,6 +22,46 @@ require 'chef/mixin/shell_out'
 require 'chef/mixin/language'
 include Chef::Mixin::ShellOut
 
+action :install do
+
+	Chef::Log.info 'Carton action :install ...'
+
+  app_perlbrew       = new_resource.perlbrew
+  app_deploy_dir     = new_resource.deploy_dir
+  app_user           = new_resource.user
+  app_group          = new_resource.group
+
+  # ensure we have perl + carton for requested perlbrew version
+  carton_perlbrew = app_perlbrew || raise
+  carton_lib = "#{carton_perlbrew}@carton"
+
+  app_local          = "local-#{app_perlbrew}"
+  app_env            = new_resource.environment.merge({
+    'PERLBREW_ROOT'     => node['perlbrew']['perlbrew_root'],
+    'PERLBREW_HOME'     => node['perlbrew']['perlbrew_root'],
+    'PERL_CARTON_PATH'  => app_local
+  })
+
+	# Install perl if not already
+	perlbrew_perl carton_perlbrew
+	perlbrew_lib  carton_lib
+
+	Chef::Log.info 'Installing carton ...'
+	perlbrew_run "cpanm Carton" do
+		perlbrew carton_lib
+	end
+
+	Chef::Log.info 'Installing dependencies with carton ...'
+	perlbrew_run "carton install" do
+		perlbrew carton_lib
+		environment app_env
+		cwd app_deploy_dir
+		command "carton install --deployment"
+	end
+
+end
+
+=begin
 
 action :enable do
   # XXX should probably fail if no carton.lock is found in cwd
@@ -85,29 +125,5 @@ action :enable do
   end
   new_resource.updated_by_last_action(updated || r.updated_by_last_action?)
 end
+=end
 
-action :disable do
-  r = runit_service new_resource.name do
-    action :disable
-  end
-  new_resource.updated_by_last_action(r.updated_by_last_action?)
-end
-
-action :start do
-  runit_service new_resource.name do
-    action :start
-  end
-end
-
-action :stop do
-  runit_service new_resource.name do
-    action :stop
-  end
-end
-
-action :restart do
-  r = runit_service new_resource.name
-  r.run_action(:restart)
-end
-
-# :enable :disable :nothing :start :stop :restart :reload}

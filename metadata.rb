@@ -1,3 +1,4 @@
+name             "carton"
 maintainer       "David Golden"
 maintainer_email "dagolden@cpan.org"
 license          "Apache 2.0"
@@ -8,4 +9,4 @@ recipe           "carton::default", "Installs carton LWRP dependencies"
 supports         "debian"
 supports         "ubuntu"
 depends          "perlbrew", ">= 0.1.1"
-depends          "runit", ">= 0.15.0"  # this is a lie, see README.md
+# depends          "runit", ">= 0.15.0"  # this is a lie, see README.md

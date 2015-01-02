@@ -59,4 +59,3 @@ action :run do
   new_resource.updated_by_last_action(true)
 end
 
-# :enable :disable :nothing :start :stop :restart :reload}

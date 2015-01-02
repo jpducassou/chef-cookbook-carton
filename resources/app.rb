@@ -18,18 +18,17 @@
 # limitations under the License.
 #
 
-actions :enable, :disable, :start, :stop, :restart
+actions :install
 
-attribute :perlbrew, :kind_of => String, :required => true
-attribute :command, :kind_of => String, :required => true
-attribute :cwd, :kind_of => String, :required => true
+attribute :perlbrew,    :kind_of => String, :required => true
+attribute :deploy_dir,  :kind_of => String, :required => true
 
-attribute :user, :kind_of => String, :default => "nobody"
-attribute :group, :kind_of => String, :default => "nobody"
-attribute :environment, :kind_of => Hash, :default => {}
+attribute :user,        :kind_of => String, :default => "nobody"
+attribute :group,       :kind_of => String, :default => "nobody"
+attribute :environment, :kind_of => Hash,   :default => {}
 
 def initialize(*args)
   super
-  @action = :enable
+  @action = :install
 end
 
