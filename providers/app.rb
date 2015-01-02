@@ -56,7 +56,11 @@ action :install do
 		perlbrew carton_lib
 		environment app_env
 		cwd app_deploy_dir
-		command "carton install --deployment"
+		if ::File.exists?("#{app_deploy_dir}/cpanfile.snapshot")
+			command "carton install --deployment"
+		else
+			command "carton install"
+		end
 	end
 
 end
